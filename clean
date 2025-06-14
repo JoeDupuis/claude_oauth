@@ -1,12 +1,13 @@
 #!/bin/bash
 
 CONTAINER_NAME="${CLAUDE_CONTAINER_NAME:-claude_oauth}"
+VOLUME_NAME="${CLAUDE_VOLUME_NAME:-claude_config}"
 
 echo "=== Clean All Claude Code Docker Resources ==="
 echo
 echo "This will remove:"
 echo "  - Docker image '$CONTAINER_NAME'"
-echo "  - Docker volume 'claude_config' (contains credentials)"
+echo "  - Docker volume '$VOLUME_NAME' (contains credentials)"
 echo "  - Any running $CONTAINER_NAME containers"
 echo
 read -p "Are you sure you want to remove everything? (y/N) " -n 1 -r
@@ -22,8 +23,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   docker rmi $CONTAINER_NAME 2>/dev/null || echo "  Image not found"
   
   # Remove the Docker volume
-  echo "Removing claude_config Docker volume..."
-  docker volume rm claude_config 2>/dev/null || echo "  Volume not found"
+  echo "Removing $VOLUME_NAME Docker volume..."
+  docker volume rm $VOLUME_NAME 2>/dev/null || echo "  Volume not found"
   
   echo
   echo "✓ Clean up complete!"

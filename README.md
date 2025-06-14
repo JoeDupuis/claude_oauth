@@ -9,7 +9,7 @@ This setup runs Claude Code on a Claude Max or Pro subscription entirely in Dock
    ./setup
    ```
    This will:
-   - Create a Docker volume `claude_config`
+   - Create a Docker volume (default: `claude_config`)
    - Build the Docker image
    - Run the OAuth login process inside the container
    - Store credentials in the Docker volume
@@ -37,10 +37,14 @@ This setup runs Claude Code on a Claude Max or Pro subscription entirely in Dock
 ## Environment Variables
 
 - `CLAUDE_CONTAINER_NAME` - Override the default container name (default: `claude_oauth`)
-  ```bash
-  export CLAUDE_CONTAINER_NAME=my_custom_name
-  ./setup
-  ```
+- `CLAUDE_VOLUME_NAME` - Override the default volume name (default: `claude_config`)
+
+Examples:
+```bash
+export CLAUDE_CONTAINER_NAME=my_custom_container
+export CLAUDE_VOLUME_NAME=my_custom_volume
+./setup
+```
 
 ## Files
 
@@ -53,6 +57,6 @@ This setup runs Claude Code on a Claude Max or Pro subscription entirely in Dock
 
 ## Architecture
 
-- All credentials are stored in Docker volume `claude_config`
+- All credentials are stored in Docker volume (configurable via `CLAUDE_VOLUME_NAME`)
 - Login happens inside the container
 - Current directory is mounted as `/workspace` when running Claude Code

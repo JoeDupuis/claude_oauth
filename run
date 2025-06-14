@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run Claude Code with the volume mounted
-VOLUME_NAME="claude_config"
+VOLUME_NAME="${CLAUDE_VOLUME_NAME:-claude_config}"
 CONTAINER_NAME="${CLAUDE_CONTAINER_NAME:-claude_oauth}"
 
 # Check if volume exists
