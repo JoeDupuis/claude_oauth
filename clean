@@ -1,0 +1,33 @@
+#!/bin/bash
+
+echo "=== Clean All Claude Code Docker Resources ==="
+echo
+echo "This will remove:"
+echo "  - Docker image 'claude_max'"
+echo "  - Docker volume 'claude_config' (contains credentials)"
+echo "  - Any running claude_max containers"
+echo
+read -p "Are you sure you want to remove everything? (y/N) " -n 1 -r
+echo
+
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  # Stop and remove any running containers
+  echo "Removing any running claude_max containers..."
+  docker ps -a | grep claude_max | awk '{print $1}' | xargs -r docker rm -f 2>/dev/null || true
+  
+  # Remove the Docker image
+  echo "Removing claude_max Docker image..."
+  docker rmi claude_max 2>/dev/null || echo "  Image not found"
+  
+  # Remove the Docker volume
+  echo "Removing claude_config Docker volume..."
+  docker volume rm claude_config 2>/dev/null || echo "  Volume not found"
+  
+  echo
+  echo "✓ Clean up complete!"
+  echo
+  echo "To start fresh:"
+  echo "  ./setup"
+else
+  echo "Cancelled."
+fi

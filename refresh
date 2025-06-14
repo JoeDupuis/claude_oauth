@@ -1,0 +1,28 @@
+#!/bin/bash
+
+echo "=== Refreshing Claude Code Tokens ==="
+echo
+
+VOLUME_NAME="claude_config"
+
+# Check if volume exists
+if ! docker volume ls | grep -q "$VOLUME_NAME"; then
+  echo "Error: Docker volume '$VOLUME_NAME' not found."
+  echo "Run ./setup first."
+  exit 1
+fi
+
+# Run token refresh inside container
+docker run --rm \
+  -v $VOLUME_NAME:/home/claude/.claude \
+  --entrypoint /home/claude/refresh_token.rb \
+  claude_max
+
+if [ $? -eq 0 ]; then
+  echo
+  echo "✓ Tokens refreshed successfully!"
+else
+  echo
+  echo "✗ Failed to refresh tokens. You may need to login again:"
+  echo "  ./setup"
+fi

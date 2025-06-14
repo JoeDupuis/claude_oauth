@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Run Claude Code with the volume mounted
+VOLUME_NAME="claude_config"
+
+# Check if volume exists
+if ! docker volume ls | grep -q "$VOLUME_NAME"; then
+  echo "Error: Docker volume '$VOLUME_NAME' not found."
+  echo "Run ./setup first."
+  exit 1
+fi
+
+# Run Claude Code
+docker run --rm -it \
+  -v "$(pwd):/workspace" \
+  -v "$VOLUME_NAME:/home/claude/.claude" \
+  claude_max "$@"

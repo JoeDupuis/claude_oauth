@@ -1,0 +1,82 @@
+#!/bin/bash
+
+echo "=== Claude Code Container Setup ==="
+echo "All credentials will be stored in Docker volume 'claude_config'"
+echo
+
+# Colors
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+VOLUME_NAME="claude_config"
+
+# Create volume if it doesn't exist
+if ! docker volume ls | grep -q "$VOLUME_NAME"; then
+  echo "Creating Docker volume '$VOLUME_NAME'..."
+  docker volume create $VOLUME_NAME
+fi
+
+# Build the Docker image
+echo -e "${BLUE}Building Docker image...${NC}"
+docker build -t claude_max . || {
+  echo -e "${RED}Failed to build Docker image${NC}"
+  exit 1
+}
+
+# Check if credentials already exist in volume
+echo -e "${BLUE}Checking for existing credentials...${NC}"
+HAS_CREDS=$(docker run --rm -v $VOLUME_NAME:/home/claude/.claude claude_max bash -c "[ -f /home/claude/.claude/.credentials.json ] && echo 'yes' || echo 'no'")
+
+if [ "$HAS_CREDS" = "yes" ]; then
+  echo -e "${GREEN}✓ Credentials found in Docker volume${NC}"
+  echo
+  echo "To use Claude Code:"
+  echo "  docker run --rm -it -v \$(pwd):/workspace -v $VOLUME_NAME:/home/claude/.claude claude_max"
+  echo
+  echo "To refresh tokens:"
+  echo "  ./refresh"
+  exit 0
+fi
+
+# No credentials, need to login
+echo -e "${YELLOW}No credentials found. Starting OAuth login...${NC}"
+echo
+echo "This will run the login process inside the container."
+echo "Follow the prompts to complete OAuth authentication."
+echo
+
+# Run interactive login inside container
+docker run --rm -it \
+  -v $VOLUME_NAME:/home/claude/.claude \
+  --entrypoint /bin/bash \
+  claude_max -c "
+    echo '=== OAuth Login Process ==='
+    echo
+    echo 'Step 1: Generating OAuth URL...'
+    /home/claude/login_start.rb
+    echo
+    echo 'Step 2: Enter the authorization code from your browser'
+    read -p 'Authorization code: ' AUTH_CODE
+    echo
+    echo 'Step 3: Completing OAuth flow...'
+    /home/claude/login_finish.rb \"\$AUTH_CODE\"
+    echo
+    if [ -f /home/claude/.claude/.credentials.json ]; then
+      echo '✓ Login successful! Credentials saved to volume.'
+    else
+      echo '✗ Login failed. Please try again.'
+      exit 1
+    fi
+  "
+
+echo
+echo -e "${GREEN}Setup complete!${NC}"
+echo
+echo "To use Claude Code:"
+echo "  docker run --rm -it -v \$(pwd):/workspace -v $VOLUME_NAME:/home/claude/.claude claude_max"
+echo
+echo "Or use the convenience script:"
+echo "  ./run"
