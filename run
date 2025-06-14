@@ -2,6 +2,7 @@
 
 # Run Claude Code with the volume mounted
 VOLUME_NAME="claude_config"
+CONTAINER_NAME="${CLAUDE_CONTAINER_NAME:-claude_oauth}"
 
 # Check if volume exists
 if ! docker volume ls | grep -q "$VOLUME_NAME"; then
@@ -14,4 +15,4 @@ fi
 docker run --rm -it \
   -v "$(pwd):/workspace" \
   -v "$VOLUME_NAME:/home/claude/.claude" \
-  claude_max "$@"
+  $CONTAINER_NAME "$@"

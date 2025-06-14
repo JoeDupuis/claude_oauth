@@ -20,7 +20,7 @@ This setup runs Claude Code on a Claude Max or Pro subscription entirely in Dock
    ```
    Or directly:
    ```bash
-   docker run --rm -it -v $(pwd):/workspace -v claude_config:/home/claude/.claude claude_max
+   docker run --rm -it -v $(pwd):/workspace -v claude_config:/home/claude/.claude claude_oauth
    ```
 
 3. **Refresh Tokens**
@@ -33,6 +33,14 @@ This setup runs Claude Code on a Claude Max or Pro subscription entirely in Dock
    ./clean
    ```
    This removes the Docker image, volume, and any containers.
+
+## Environment Variables
+
+- `CLAUDE_CONTAINER_NAME` - Override the default container name (default: `claude_oauth`)
+  ```bash
+  export CLAUDE_CONTAINER_NAME=my_custom_name
+  ./setup
+  ```
 
 ## Files
 
