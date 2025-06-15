@@ -4,7 +4,7 @@ echo "=== Refreshing Claude Code Tokens ==="
 echo
 
 VOLUME_NAME="${CLAUDE_VOLUME_NAME:-claude_config}"
-CONTAINER_NAME="${CLAUDE_CONTAINER_NAME:-claude_oauth}"
+IMAGE_NAME="${CLAUDE_IMAGE_NAME:-joedupuis/claude_oauth}"
 
 # Check if volume exists
 if ! docker volume ls | grep -q "$VOLUME_NAME"; then
@@ -17,7 +17,7 @@ fi
 docker run --rm \
   -v $VOLUME_NAME:/home/claude/.claude \
   --entrypoint /home/claude/refresh_token.rb \
-  $CONTAINER_NAME
+  $IMAGE_NAME
 
 if [ $? -eq 0 ]; then
   echo

@@ -13,6 +13,7 @@ NC='\033[0m'
 
 VOLUME_NAME="${CLAUDE_VOLUME_NAME:-claude_config}"
 CONTAINER_NAME="${CLAUDE_CONTAINER_NAME:-claude_oauth}"
+IMAGE_NAME="${CLAUDE_IMAGE_NAME:-joedupuis/claude_oauth}"
 
 # Create volume if it doesn't exist
 if ! docker volume ls | grep -q "$VOLUME_NAME"; then
@@ -22,20 +23,20 @@ fi
 
 # Build the Docker image
 echo -e "${BLUE}Building Docker image...${NC}"
-docker build -t $CONTAINER_NAME . || {
+docker build -t $IMAGE_NAME . || {
   echo -e "${RED}Failed to build Docker image${NC}"
   exit 1
 }
 
 # Check if credentials already exist in volume
 echo -e "${BLUE}Checking for existing credentials...${NC}"
-HAS_CREDS=$(docker run --rm -v $VOLUME_NAME:/home/claude/.claude $CONTAINER_NAME bash -c "[ -f /home/claude/.claude/.credentials.json ] && echo 'yes' || echo 'no'")
+HAS_CREDS=$(docker run --rm -v $VOLUME_NAME:/home/claude/.claude $IMAGE_NAME bash -c "[ -f /home/claude/.claude/.credentials.json ] && echo 'yes' || echo 'no'")
 
 if [ "$HAS_CREDS" = "yes" ]; then
   echo -e "${GREEN}✓ Credentials found in Docker volume${NC}"
   echo
   echo "To use Claude Code:"
-  echo "  docker run --rm -it -v \$(pwd):/workspace -v $VOLUME_NAME:/home/claude/.claude $CONTAINER_NAME"
+  echo "  docker run --rm -it -v \$(pwd):/workspace -v $VOLUME_NAME:/home/claude/.claude $IMAGE_NAME"
   echo
   echo "To refresh tokens:"
   echo "  ./refresh"
@@ -53,7 +54,7 @@ echo
 docker run --rm -it \
   -v $VOLUME_NAME:/home/claude/.claude \
   --entrypoint /bin/bash \
-  $CONTAINER_NAME -c "
+  $IMAGE_NAME -c "
     echo '=== OAuth Login Process ==='
     echo
     echo 'Step 1: Generating OAuth URL...'
@@ -77,7 +78,7 @@ echo
 echo -e "${GREEN}Setup complete!${NC}"
 echo
 echo "To use Claude Code:"
-echo "  docker run --rm -it -v \$(pwd):/workspace -v $VOLUME_NAME:/home/claude/.claude $CONTAINER_NAME"
+echo "  docker run --rm -it -v \$(pwd):/workspace -v $VOLUME_NAME:/home/claude/.claude $IMAGE_NAME"
 echo
 echo "Or use the convenience script:"
 echo "  ./run"
