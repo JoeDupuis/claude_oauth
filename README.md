@@ -60,3 +60,4 @@ export CLAUDE_VOLUME_NAME=my_custom_volume
 - All credentials are stored in Docker volume (configurable via `CLAUDE_VOLUME_NAME`)
 - Login happens inside the container
 - Current directory is mounted as `/workspace` when running Claude Code
+- The GitHub workflow publishes multi-architecture images for `amd64` and `arm64`
