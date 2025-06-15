@@ -21,6 +21,16 @@ RUN git clone https://github.com/rbenv/rbenv.git /opt/rbenv && \
 ARG CLAUDE_CACHE_BUST=1
 RUN npm install -g @anthropic-ai/claude-code
 
+# Copy scripts to /usr/local/bin as root
+COPY refresh_token /usr/local/bin/refresh_token
+COPY login_start /usr/local/bin/login_start
+COPY login_finish /usr/local/bin/login_finish
+COPY entrypoint.sh /usr/local/bin/claude-entrypoint
+RUN chmod +x /usr/local/bin/refresh_token && \
+    chmod +x /usr/local/bin/login_start && \
+    chmod +x /usr/local/bin/login_finish && \
+    chmod +x /usr/local/bin/claude-entrypoint
+
 USER claude
 WORKDIR /workspace
 
@@ -29,15 +39,8 @@ RUN mkdir -p /home/claude/.claude
 VOLUME ["/home/claude/.claude"]
 
 # Create .config/claude-code directory for Claude to initialize its config
-RUN mkdir -p /home/claude/.config/claude-code
-
-COPY --chown=claude:claude refresh_token.rb /home/claude/refresh_token.rb
-COPY --chown=claude:claude login_start.rb /home/claude/login_start.rb
-COPY --chown=claude:claude login_finish.rb /home/claude/login_finish.rb
-RUN chmod +x /home/claude/refresh_token.rb && \
-    chmod +x /home/claude/login_start.rb && \
-    chmod +x /home/claude/login_finish.rb && \
+RUN mkdir -p /home/claude/.config/claude-code && \
     echo 'export PATH="/opt/rbenv/bin:$PATH"' >> /home/claude/.bashrc && \
     echo 'eval "$(rbenv init -)"' >> /home/claude/.bashrc
 
-ENTRYPOINT ["claude"]
+ENTRYPOINT ["/usr/local/bin/claude-entrypoint"]

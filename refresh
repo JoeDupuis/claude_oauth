@@ -16,8 +16,7 @@ fi
 # Run token refresh inside container
 docker run --rm \
   -v $VOLUME_NAME:/home/claude/.claude \
-  --entrypoint /home/claude/refresh_token.rb \
-  $IMAGE_NAME
+  $IMAGE_NAME refresh_token
 
 if [ $? -eq 0 ]; then
   echo

@@ -55,16 +55,21 @@ docker run --rm -it \
   -v $VOLUME_NAME:/home/claude/.claude \
   --entrypoint /bin/bash \
   $IMAGE_NAME -c "
+    # Set up rbenv environment for this bash session
+    export PATH=\"/opt/rbenv/bin:\$PATH\"
+    export RBENV_ROOT=\"/opt/rbenv\"
+    eval \"\$(rbenv init -)\"
+
     echo '=== OAuth Login Process ==='
     echo
     echo 'Step 1: Generating OAuth URL...'
-    /home/claude/login_start.rb
+    /usr/local/bin/login_start
     echo
     echo 'Step 2: Enter the authorization code from your browser'
     read -p 'Authorization code: ' AUTH_CODE
     echo
     echo 'Step 3: Completing OAuth flow...'
-    /home/claude/login_finish.rb \"\$AUTH_CODE\"
+    /usr/local/bin/login_finish \"\$AUTH_CODE\"
     echo
     if [ -f /home/claude/.claude/.credentials.json ]; then
       echo '✓ Login successful! Credentials saved to volume.'
