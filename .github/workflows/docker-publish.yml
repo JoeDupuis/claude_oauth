@@ -25,7 +25,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ${{ secrets.DOCKER_USERNAME }}/claude-oauth
+        images: ${{ secrets.DOCKER_USERNAME }}/claude_oauth
         tags: |
           type=raw,value=latest
           type=sha
