@@ -34,13 +34,12 @@ RUN chmod +x /usr/local/bin/refresh_token && \
 USER claude
 WORKDIR /workspace
 
-# Create .claude directory and declare it as a volume
-RUN mkdir -p /home/claude/.claude
+# Create .claude directory and projects subdirectory, declare as a volume
+RUN mkdir -p /home/claude/.claude/projects
 VOLUME ["/home/claude/.claude"]
 
-# Create .config/claude-code directory for Claude to initialize its config
-RUN mkdir -p /home/claude/.config/claude-code && \
-    echo 'export PATH="/opt/rbenv/bin:$PATH"' >> /home/claude/.bashrc && \
+# Add rbenv to PATH for the claude user
+RUN echo 'export PATH="/opt/rbenv/bin:$PATH"' >> /home/claude/.bashrc && \
     echo 'eval "$(rbenv init -)"' >> /home/claude/.bashrc
 
 ENTRYPOINT ["/usr/local/bin/claude-entrypoint"]
