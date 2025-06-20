@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-RUN apt-get update && apt-get install -y git nodejs npm gh curl build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev ripgrep net-tools iproute2 libyaml-dev
+RUN apt-get update && apt-get install -y git nodejs npm gh curl build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev ripgrep net-tools iproute2 libyaml-dev openssh-client
 
 RUN git clone https://github.com/rbenv/rbenv.git /opt/rbenv && \
     git clone https://github.com/rbenv/ruby-build.git /opt/rbenv/plugins/ruby-build && \
@@ -30,6 +30,11 @@ RUN chmod +x /usr/local/bin/refresh_token && \
     chmod +x /usr/local/bin/login_start && \
     chmod +x /usr/local/bin/login_finish && \
     chmod +x /usr/local/bin/claude-entrypoint
+
+# Add GitHub to known hosts
+RUN mkdir -p /home/claude/.ssh && \
+    ssh-keyscan -t rsa github.com >> /home/claude/.ssh/known_hosts && \
+    chown -R claude:claude /home/claude/.ssh
 
 USER claude
 WORKDIR /workspace
