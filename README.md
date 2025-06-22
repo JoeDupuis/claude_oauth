@@ -53,7 +53,7 @@ export CLAUDE_VOLUME_NAME=my_custom_volume
 - `refresh` - Refresh OAuth tokens
 - `clean` - Remove everything
 - `Dockerfile` - Docker image definition
-- `login_*.rb`, `refresh_token.rb` - OAuth scripts (run inside container)
+- `login_*`, `refresh_token` - OAuth scripts (run inside container)
 
 ## Architecture
 
