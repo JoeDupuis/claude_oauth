@@ -9,8 +9,6 @@ RUN git clone https://github.com/rbenv/rbenv.git /opt/rbenv && \
     export PATH="/opt/rbenv/bin:$PATH" && eval "$(rbenv init -)" && \
     cd /opt/rbenv/plugins/ruby-build && git pull && \
     RBENV_ROOT=/opt/rbenv /opt/rbenv/bin/rbenv install 3.4.4 && \
-    RBENV_ROOT=/opt/rbenv /opt/rbenv/bin/rbenv install 3.3.8 && \
-    RBENV_ROOT=/opt/rbenv /opt/rbenv/bin/rbenv install 3.2.3 && \
     RBENV_ROOT=/opt/rbenv /opt/rbenv/bin/rbenv global 3.4.4 && \
     userdel -r ubuntu && \
     useradd -m -s /bin/bash -u 1000 claude && \
@@ -30,11 +28,6 @@ RUN chmod +x /usr/local/bin/refresh_token && \
     chmod +x /usr/local/bin/login_start && \
     chmod +x /usr/local/bin/login_finish && \
     chmod +x /usr/local/bin/claude-entrypoint
-
-# Add GitHub to known hosts
-RUN mkdir -p /home/claude/.ssh && \
-    ssh-keyscan -t rsa github.com >> /home/claude/.ssh/known_hosts && \
-    chown -R claude:claude /home/claude/.ssh
 
 USER claude
 WORKDIR /workspace
